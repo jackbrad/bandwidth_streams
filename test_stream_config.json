@@ -1,6 +1,6 @@
 {
     "mdr_id": "{{uuid()}}",
-    "received_time": {{timestamp()}},
+    "received_time": {{timestamp()}}, 
     "msg_hour": {{integer(0,23)}},
     "msg_minute": {{integer(0,59)}},
     "msg_second": {{integer(0,59)}},
