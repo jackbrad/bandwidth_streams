@@ -4,3 +4,18 @@ gcloud beta dataflow flex-template run stream-fakes-4 --template-file-gcs-locati
 
 #create the stream to BQ from the pubsub topics 
 gcloud dataflow sql query 'SELECT * FROM pubsub.topic.bandwidthstream.Inbound' --job-name streamFromPubSubToBQ --region us-east1 --bigquery-write-disposition write-empty --bigquery-project bandwidthstream --bigquery-dataset Insights --bigquery-table Messages
+
+
+
+#create aggregates stream 
+gcloud dataflow sql query '
+SELECT
+  TUMBLE_START('INTERVAL 10 SECOND') as period_start,
+  Count(message_status) AS red_message_count,
+  provider_id
+FROM pubsub.topic.bandwidthstream.Inbound
+WHERE
+  message_status = "red"
+GROUP BY
+  provider_id, 
+  TUMBLE(event_timestamp, 'INTERVAL 10 SECOND')' --job-name dfsql-aggregate-stream --region us-east1 --bigquery-write-disposition write-empty --bigquery-project bandwidthstream --bigquery-dataset Insights --bigquery-table Aggregates
